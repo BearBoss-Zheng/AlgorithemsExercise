@@ -33,7 +33,10 @@ public class KnuthMorrisPratt {
 //        System.out.println(Arrays.toString(array));
         String str1 = "gaaabababcabcgabcdeabcdeabcdef";
         String str2 = "abcdeabcdef";
-        System.out.printf("str1包含str2，从%d开始", indexOfSubstring(str1, str2));
+        System.out.printf("str1包含str2，从%d开始\n", indexOfSubstring(str1, str2));
+        String s = "ABABCABAB";
+        int[] array = getNextArray(s.toCharArray());
+        System.out.println(Arrays.toString(array));
     }
 
     public static int indexOfSubstring(String str1,String str2){
@@ -113,6 +116,13 @@ public class KnuthMorrisPratt {
             if (chs[index] == chs[i-1]){
                 next[i++] = ++index;
             }else if (index > 0){
+                /*
+                    这里不能写 index >= 0,原因如下：
+                    1.chs[index]，所以index天然 >= 0
+                    2.index = 0，在上面一个条件中，就已经对比过第一个字符了
+                      如果相等，会自动加上，如果不等，这里跳到 index = next[0] = -1，
+                      毫无意义
+                 */
                 index = next[index];
             }else {
                 /*
@@ -128,4 +138,34 @@ public class KnuthMorrisPratt {
         return next;
     }
 
+    //review
+    public static int[] getPartialMatchTable(char[] chs){
+        if (chs == null || chs.length == 0){
+            return null;
+        }
+
+        if (chs.length == 1){
+            return new int[]{-1};
+        }
+
+        int[] partialMatchTable = new int[chs.length];
+        partialMatchTable[0] = -1;
+        partialMatchTable[1] = 0;
+        int index = 2;
+        int length = 0;
+
+        while (index < chs.length){
+            if (chs[index -1] == chs[length]){
+                partialMatchTable[index] = ++length;
+            }else if (length > 0){
+                length = partialMatchTable[length];
+            }else {
+                partialMatchTable[index] = 0;
+            }
+        }
+
+        return partialMatchTable;
+
+
+    }
 }

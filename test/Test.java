@@ -12,14 +12,11 @@ import java.util.*;
 public class Test {
     public static void main(String[] args) {
 
-        Queue queue = new LinkedList();
-        queue.add(1);
-        queue.add(2);
-        queue.add(3);
-        System.out.println(queue.poll());
-        System.out.println(queue.poll());
-        System.out.println(queue.poll());
-
+        Deque<Integer> deque = new ArrayDeque<>();
+        int i = 10;
+        deque.add(i);
+        Map<Integer,Integer> map = new HashMap<>();
+        map.put(i,i);
 
 
     }

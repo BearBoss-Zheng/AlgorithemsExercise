@@ -40,8 +40,9 @@ public class BinaryTree {
         recursiveBreadthFirstTraversal(root);
         System.out.println("非递归方式宽度优先遍历");
         iterativeBreadthFirstTraversal(root);
-        System.out.println("二叉树深度 = " + getDepthOfTree(root));
-        printTree(root,0);
+        System.out.println("Morris遍历");
+        morrisTraversal(root);
+
 
     }
 
@@ -313,6 +314,86 @@ public class BinaryTree {
         return Math.max(leftDepth,rightDepth) + 1;
     }
 
+    /**
+     * 叉树节点间的最大距离问题
+     * 从二叉树的节点a出发，可以向上或者向下走，但沿途的节点只能经过一次，
+     * 到达节点b时路径上的节点个数叫做a到b的距离，那么二叉树任何两个节点
+     * 之间都有距离，求整棵树上的最大距离
+     *
+     * 分情况讨论：
+     * 1.x节点不参与：
+     *      Max{左数的最大距离，右数的最大距离}
+     * 2.x参与
+     *      左数高+右树高+1
+     */
+    public static int getMaxDistance(Node node){
+        if (node == null){
+            return 0;
+        }
 
+        int leftHeight = getDepthOfTree(node.left);
+        int rightHeight = getDepthOfTree(node.right);
+        int leftDistance = getMaxDistance(node.left);
+        int rightDistance = getMaxDistance(node.right);
+        int maxDistance = Math.max(1 + leftHeight + rightHeight, Math.max(leftDistance,rightDistance));
 
+        return maxDistance;
+    }
+
+    /**
+     * Morris遍历【中序】
+     * Morris遍历是一种用于二叉树遍历的巧妙算法，它不需要使用递归或栈，同时也不需要修改树的结构。
+     * 这种遍历算法的核心思想是在遍历的过程中，利用空闲指针将树中的节点连接起来，从而实现遍历。
+     * 【Morris遍历的两大步骤】
+     * 1.建立连接： 在遍历过程中，利用空闲指针（通常是节点的右子树的最右节点的右子树）将当前节点与
+     * 其前驱节点连接起来。这样可以在遍历完成后，通过这些连接找到下一个要访问的节点。
+     * 2.断开连接： 遍历完成后，为了不破坏树的结构，需要断开之前建立的连接。
+     * 【遍历细节】
+     * 假设来到当前节点cur，开始时cur来到头节点位置
+     * 1.如果cur没有左孩子，那么cur向右移动（cur = cur.right）
+     * 2.如果cur有左孩子，找到左子树上最右的节点mostRight：
+     *      a.如果mostRight的右指针指向空，让其指向cur，
+     *      然后cur向左移动（cur = cur.left）;
+     *      b.如果mostRight的右指针指向cur，让其指向null，
+     *      然后cur向左移动（cur = cur.right）;
+     */
+    public static void morrisTraversal(Node root){
+        Node cur = root;
+        Node mostRight = null;
+
+        while (cur != null){
+            if (cur.left == null){
+                System.out.println(cur.value);
+                cur = cur.right;
+                continue;
+            }
+
+            mostRight = getMostRightNode(cur.left,cur);
+            if (mostRight == null){
+                mostRight.right = cur;
+                cur = cur.left;
+            }else {
+                mostRight.right = null;
+                System.out.println(cur.value);
+                cur = cur.right;
+            }
+        }
+    }
+
+    /**
+     * 辅助Morris遍历
+     * 帮助其获得左子节点的最右节点，pre就是前面的节点
+     * 必须保证mostRight ！= pre
+     * @param leftNode
+     * @param pre
+     * @return
+     */
+    public static Node getMostRightNode(Node leftNode,Node pre){
+        Node mostRight = leftNode;
+        while (mostRight.right != null && mostRight.right != pre){
+            mostRight = mostRight.right;
+        }
+
+        return mostRight;
+    }
 }
